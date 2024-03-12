@@ -49,8 +49,8 @@ public class CartController {
 
     }
 
-    @PutMapping("/update")
-    public String updateProduct(@RequestBody Cart cart) {
+    @PutMapping("/{id}")
+    public String updateProduct(@RequestBody Cart cart, @PathVariable("id") long id) {
 
         try {
             cartService.updateProduct(cart);
@@ -61,7 +61,7 @@ public class CartController {
         return "Success";
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteProduct(@PathVariable("id") long id) {
 
         try {
