@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CartServ {
 
-    List<Cart> getAllProducts();
+    List<Cart> getAll();
 
     Cart getCart(long id);
 

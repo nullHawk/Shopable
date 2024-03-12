@@ -2,7 +2,6 @@ package com.nullhawk.shopable.controllers;
 
 import com.nullhawk.shopable.models.Cart;
 import com.nullhawk.shopable.services.CartServ;
-import jakarta.websocket.server.PathParam;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public class CartController {
 
     @GetMapping("")
     public List<Cart> getAll() {
-        return cartService.getAllProducts();
+        return cartService.getAll();
     }
 
     @GetMapping("/{id}")

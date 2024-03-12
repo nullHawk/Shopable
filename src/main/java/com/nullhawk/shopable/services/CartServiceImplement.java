@@ -13,8 +13,19 @@ public class CartServiceImplement implements CartServ {
 
     private final String url = "https://fakestoreapi.com/carts";
     private final RestTemplate restTemplate = new RestTemplate();
+
+    private Cart mapToCart(CartDto cartRecieveDTO) {
+
+        return new Cart(cartRecieveDTO.getId(), cartRecieveDTO.getUserId(), cartRecieveDTO.getDate(), cartRecieveDTO.getProducts());
+
+    }
+    private CartDto mapToCartDto(Cart cart) {
+
+        return new CartDto(cart.getId(), cart.getUserId(), cart.getDate(), cart.getProducts());
+
+    }
     @Override
-    public List<Cart> getAllProducts() {
+    public List<Cart> getAll() {
 
         List<CartDto> cartFetchDTO = restTemplate.exchange(
                 url,
@@ -26,15 +37,6 @@ public class CartServiceImplement implements CartServ {
 
         return cartFetchDTO.stream().map(this::mapToCart).toList();
     }
-
-    private Cart mapToCart(CartDto cartRecieveDTO) {
-
-        return new Cart(cartRecieveDTO.getId(), cartRecieveDTO.getUserId(), cartRecieveDTO.getDate(), cartRecieveDTO.getProducts());
-
-    }
-
-
-
     @Override
     public Cart getCart(long id) {
 
@@ -44,8 +46,6 @@ public class CartServiceImplement implements CartServ {
 
         return mapToCart(cartRecieveDTO);
     }
-
-
 
     @Override
     public List<Cart> inDateRange(String start, String end) {
@@ -77,7 +77,7 @@ public class CartServiceImplement implements CartServ {
 
     @Override
     public void addNewCart(Cart cart) {
-        CartDto sendCart = mapToCardDTO(cart);
+        CartDto sendCart = mapToCartDto(cart);
         sendCart = restTemplate.postForObject(url, sendCart, CartDto.class);
 
 //        The cart could be returned to the user as well but no need to do that right now
@@ -86,15 +86,11 @@ public class CartServiceImplement implements CartServ {
 
     @Override
     public void updateProduct(Cart cart) {
-        CartDto sendCart = mapToCardDTO(cart);
+        CartDto sendCart = mapToCartDto(cart);
         restTemplate.put(url + "/" + sendCart.getId(), sendCart);
     }
 
-    private CartDto mapToCardDTO(Cart cart) {
 
-        return new CartDto(cart.getId(), cart.getUserId(), cart.getDate(), cart.getProducts());
-
-    }
 
     @Override
     public void deleteCart(long id) {
