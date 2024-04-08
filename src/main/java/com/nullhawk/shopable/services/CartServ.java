@@ -4,11 +4,17 @@ import com.nullhawk.shopable.models.Cart;
 
 import java.util.List;
 
-public interface CartServ {
+import java.util.List;
 
-    List<Cart> getAll();
+public interface CartService {
 
-    Cart getCart(long id);
+    List<Cart> getAllProducts() ;
+
+    Cart getCart(long id) throws CartNotFoundException;
+
+    List<Cart> limitedCarts(long limit);
+
+    List<Cart> sortedCarts(String order);
 
     List<Cart> inDateRange(String start, String end);
 

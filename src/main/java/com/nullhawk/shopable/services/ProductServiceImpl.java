@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+
 @Service
 public class ProductServiceImpl implements ProductService {
 
@@ -31,33 +32,33 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private Product mapToProduct(ProductFetchDTO productFetchDTO) {
-        Category category = new Category(1L, productFetchDTO.getCategory());
-        category.setName(productFetchDTO.getCategory());
-        return new Product(productFetchDTO.getId(), productFetchDTO.getTitle(), productFetchDTO.getDescription(), productFetchDTO.getPrice(), category , productFetchDTO.getImage());
+        Category category = new Category(1L, productFetchDTO.category());
+        return new Product(productFetchDTO.id(), productFetchDTO.title(), productFetchDTO.description(), productFetchDTO.price(), category , productFetchDTO.image());
     }
 
     @Override
-    public Product getProduct(Long id) {
+    public Product getProduct(Long id) throws ProductNotFoundException {
 
         ProductFetchDTO productFetchDTO = restTemplate.getForObject(url + "/" + id, ProductFetchDTO.class);
 
-        assert productFetchDTO != null;
+        if (productFetchDTO == null) {
+            throw new ProductNotFoundException("Product with id: " + id + " not found");
+        }
 
         return mapToProduct(productFetchDTO);
     }
 
+
+    private ProductFetchDTO mapToProductFetchDTO(Product product) {
+        return new ProductFetchDTO(product.id(), product.title(), product.description(), product.price(), product.category().name(), product.imageUrl());
+    }
+
+
     @Override
     public Product addProduct(Product product) {
 
-//        Add product to the fakestoreapi
-        ProductFetchDTO productFetchDTO = new ProductFetchDTO();
-        productFetchDTO.setTitle(product.getTitle());
-        productFetchDTO.setDescription(product.getDescription());
-        productFetchDTO.setCategory(product.getCategory().getName());
-        productFetchDTO.setPrice(product.getPrice());
-        productFetchDTO.setImage(product.getImageUrl());
 
-        ProductFetchDTO response = restTemplate.postForObject(url, productFetchDTO, ProductFetchDTO.class);
+        ProductFetchDTO response = restTemplate.postForObject(url, mapToProductFetchDTO(product), ProductFetchDTO.class);
 
         assert response != null;
 
@@ -66,16 +67,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(Product product) {
-//        Update product to the fakestoreapi
-        ProductFetchDTO productFetchDTO = new ProductFetchDTO();
-        productFetchDTO.setId(product.getId());
-        productFetchDTO.setTitle(product.getTitle());
-        productFetchDTO.setDescription(product.getDescription());
-        productFetchDTO.setCategory(product.getCategory().getName());
-        productFetchDTO.setPrice(product.getPrice());
-        productFetchDTO.setImage(product.getImageUrl());
 
-        restTemplate.put(url + "/" + product.getId(), productFetchDTO);
+        restTemplate.put(url + "/" + product.id(), mapToProductFetchDTO(product));
 
         return product;
     }
@@ -86,15 +79,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getProductsByCategory(String categoryName) {
-//     https://fakestoreapi.com/products/category/jewelery
+    public List<Product> getProductsByCategory(String categoryName) throws ProductNotFoundException {
         List<ProductFetchDTO> productFetchDTOS = restTemplate.exchange(
                 url + "/category/" + categoryName,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<ProductFetchDTO>>() {}).getBody();
 
-        assert productFetchDTOS != null;
+        if(productFetchDTOS == null) {
+            throw new ProductNotFoundException("Products with category: " + categoryName + " not found");
+        }
 
         return productFetchDTOS.stream().map(this::mapToProduct).toList();
     }
@@ -116,7 +110,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getLimitedProducts(int limit) {
 
-//        https://fakestoreapi.com/products?limit=
         List<ProductFetchDTO> productFetchDTOS = restTemplate.exchange(
                 url + "?limit=" + limit,
                 HttpMethod.GET,
@@ -132,7 +125,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getSortedProducts(String sort) {
 
-//        https://fakestoreapi.com/products?sort=
         List<ProductFetchDTO> productFetchDTOS = restTemplate.exchange(
                 url + "?sort=" + sort,
                 HttpMethod.GET,

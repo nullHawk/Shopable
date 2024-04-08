@@ -1,30 +1,42 @@
 package com.nullhawk.shopable.controllers;
 
+import com.nullhawk.shopable.exceptions.CartNotFoundException;
 import com.nullhawk.shopable.models.Cart;
-import com.nullhawk.shopable.services.CartServ;
+import com.nullhawk.shopable.services.CartService;
+import jakarta.websocket.server.PathParam;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
-@RequestMapping("/carts")
+@RequestMapping("/cart")
 public class CartController {
 
-    private final CartServ cartService;
+    private final CartService cartService;
 
-    public CartController(CartServ cartServ) {
-        this.cartService = cartServ;
+    public CartController(CartService cartService) {
+        this.cartService = cartService;
     }
 
     @GetMapping("")
     public List<Cart> getAll() {
-        return cartService.getAll();
+        return cartService.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    public Cart getCart(@PathVariable("id") Long id) {
+    public Cart getCart(@PathVariable("id") Long id) throws CartNotFoundException {
         return cartService.getCart(id);
     }
 
+    @GetMapping("/limited/{limit}")
+    public List<Cart> getLimitedCarts(@PathVariable("limit") Long limit) {
+        return cartService.limitedCarts(limit);
+    }
+
+    @GetMapping("/sorted")
+    public List<Cart> getSortedCarts(@PathParam("order") String order) {
+        return cartService.sortedCarts(order);
+    }
 
     @GetMapping("/dateRange")
     public List<Cart> betweenDateRange(@RequestParam("from") String start, @RequestParam("to") String end) {
@@ -42,34 +54,35 @@ public class CartController {
         try {
             cartService.addNewCart(cart);
         } catch (Exception e) {
-            return "Error";
+            return "There was an error while adding new cart";
         }
 
-        return "Added Successfully";
+        return "Added new product successfully";
 
     }
 
-    @PutMapping("/{id}")
-    public String updateProduct(@RequestBody Cart cart, @PathVariable("id") long id) {
+    @PutMapping("/update")
+    public String updateProduct(@RequestBody Cart cart) {
 
         try {
             cartService.updateProduct(cart);
         } catch (Exception e) {
-            return "Error";
+            return "There was an error while updating the product";
         }
 
-        return "Success";
+        return "Product updated successfully";
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteProduct(@PathVariable("id") long id) {
+    @DeleteMapping("/delete/{id}")
+    public String deleteProduct(@PathVariable("id") long id){
 
-        try {
+        try{
             cartService.deleteCart(id);
         } catch (Exception e) {
-            return "Error";
+            return "There was an error while deleting the cart";
         }
 
-        return "Deleted";
+        return "Product deleted successful";
     }
+
 }
