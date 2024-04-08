@@ -1,5 +1,6 @@
 package com.nullhawk.shopable.services;
 
+import com.nullhawk.shopable.exceptions.CartNotFoundException;
 import com.nullhawk.shopable.models.Cart;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface CartService {
 
     List<Cart> getAllProducts() ;
 
-    Cart getCart(long id) throws CartNotFoundException;
+    Cart getCart(long id) throws CartNotFoundException, CartNotFoundException;
 
     List<Cart> limitedCarts(long limit);
 

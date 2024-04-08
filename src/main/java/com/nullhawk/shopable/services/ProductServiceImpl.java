@@ -1,6 +1,7 @@
 package com.nullhawk.shopable.services;
 
 import com.nullhawk.shopable.dto.ProductFetchDTO;
+import com.nullhawk.shopable.exceptions.ProductNotFoundException;
 import com.nullhawk.shopable.models.Category;
 import com.nullhawk.shopable.models.Product;
 import org.springframework.core.ParameterizedTypeReference;

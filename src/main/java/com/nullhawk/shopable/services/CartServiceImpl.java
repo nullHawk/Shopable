@@ -1,5 +1,9 @@
 package com.nullhawk.shopable.services;
 
+import com.nullhawk.shopable.dto.CartRecieveDTO;
+import com.nullhawk.shopable.dto.ProductCartDTO;
+import com.nullhawk.shopable.exceptions.CartNotFoundException;
+import com.nullhawk.shopable.exceptions.ProductNotFoundException;
 import com.nullhawk.shopable.models.Cart;
 import com.nullhawk.shopable.models.Product;
 import org.springframework.core.ParameterizedTypeReference;
@@ -7,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,11 +36,7 @@ public class CartServiceImpl implements  CartService{
 
         for(ProductCartDTO productCartDTO : products) {
             Product product = null;
-            try {
-                product = productService.getProduct(productCartDTO.productId());
-            } catch (ProductNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            product = productService.getProduct(productCartDTO.productId());
             productList.add(product);
         }
 

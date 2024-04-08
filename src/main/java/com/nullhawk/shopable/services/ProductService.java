@@ -1,6 +1,7 @@
 package com.nullhawk.shopable.services;
 
 
+import com.nullhawk.shopable.exceptions.ProductNotFoundException;
 import com.nullhawk.shopable.models.Product;
 
 import java.util.List;
